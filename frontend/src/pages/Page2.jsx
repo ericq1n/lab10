@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import "./Page2.css";
 import { useAuthContext } from "@asgardeo/auth-react";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
+const API_URL = import.meta.env.VITE_API_BASE_URL || "https://lab10-backend-2xqp.onrender.com";
 
 const initialForm = {
   name: "",
