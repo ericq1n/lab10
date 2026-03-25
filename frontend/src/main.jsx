@@ -12,8 +12,8 @@ createRoot(document.getElementById('root')).render(
         config={{
           clientID: 'jTLOfb644OOKMz2rQgO_DieoFV4a',
           baseUrl: 'https://api.asgardeo.io/t/utexas',
-          signInRedirectURL: 'http://localhost:5173',
-          signOutRedirectURL: 'http://localhost:5173',
+          signInRedirectURL: 'https://lab10-frontend-8l47.onrender.com',
+          signOutRedirectURL: 'https://lab10-frontend-8l47.onrender.com',
           scope: ['openid', 'profile'],
         }}
       >
