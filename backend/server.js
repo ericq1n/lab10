@@ -4,7 +4,7 @@ import { Sequelize, DataTypes } from 'sequelize';
 import dotenv from 'dotenv';
 import * as jose from 'jose';
 
-// Load environment variables from .env file
+// Load environment variables from .env files
 dotenv.config();
 const DB_SCHEMA = process.env.DB_SCHEMA || 'app';
 const useSsl = process.env.PGSSLMODE === 'require';
@@ -25,32 +25,32 @@ async function authMiddleware(req, res, next) {
     const authHeader = (req.headers.authorization || '').trim();
 
     if (!authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({
-        error: 'Missing auth',
-        detail: 'Send Authorization: Bearer <access_token>',
-    });
+        return res.status(401).json({
+            error: 'Missing auth',
+            detail: 'Send Authorization: Bearer <access_token>',
+        });
     }
 
     const token = authHeader.slice(7).trim();
     const looksLikeJwt = token && token.split('.').length === 3;
 
     if (!looksLikeJwt) {
-    return res.status(401).json({
-        error: 'Access token is not a JWT. In Asgardeo, set your app to use JWT access tokens (Protocol tab).',
-    });
+        return res.status(401).json({
+            error: 'Access token is not a JWT. In Asgardeo, set your app to use JWT access tokens (Protocol tab).',
+        });
     }
 
     try {
-    const JWKS = jose.createRemoteJWKSet(new URL(JWKS_URI));
-    const { payload } = await jose.jwtVerify(token, JWKS);
-    req.userId = payload.sub; // Asgardeo's unique user id → used for row-level auth
-    return next();
+        const JWKS = jose.createRemoteJWKSet(new URL(JWKS_URI));
+        const { payload } = await jose.jwtVerify(token, JWKS);
+        req.userId = payload.sub; // Asgardeo's unique user id → used for row-level auth
+        return next();
     } catch (err) {
-    console.error('JWT verification failed:', err.message);
-    return res.status(401).json({
-        error: 'Invalid or expired token',
-        detail: err.message,
-    });
+        console.error('JWT verification failed:', err.message);
+        return res.status(401).json({
+            error: 'Invalid or expired token',
+            detail: err.message,
+        });
     }
 }
 //Apply middleware to all routes
@@ -63,15 +63,15 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER,
     port: Number(process.env.DB_PORT) || 5432,
     dialect: 'postgres',
     dialectOptions: useSsl
-    ? {
-    ssl: {
-    require: true,
-    rejectUnauthorized: false,
-    },
-    }
-    : undefined,
+        ? {
+            ssl: {
+                require: true,
+                rejectUnauthorized: false,
+            },
+        }
+        : undefined,
     define: {
-    schema: DB_SCHEMA,
+        schema: DB_SCHEMA,
     },
 });
 
@@ -115,7 +115,7 @@ app.get('/api/:id', async (req, res) => {
 //POST
 app.post('/api/', async (req, res) => {
     try {
-        const { name, breed, age, user_id } = req.body; 
+        const { name, breed, age, user_id } = req.body;
         const newPuppy = await puppies.create({ name, breed, age, user_id: req.userId });
         res.status(201).json(newPuppy);
     } catch (err) {
@@ -126,7 +126,7 @@ app.post('/api/', async (req, res) => {
 //PUT by id
 app.put('/api/:id', async (req, res) => {
     try {
-        const id = req.params.id;  
+        const id = req.params.id;
         const { name, breed, age, user_id } = req.body;
         const puppy = await puppies.findByPk(id, { where: { user_id: req.userId } });
         if (puppy) {
@@ -134,7 +134,7 @@ app.put('/api/:id', async (req, res) => {
             res.json(puppy);
         } else {
             res.status(404).json({ error: 'Puppy not found' });
-        }  
+        }
     } catch (err) {
         res.status(500).json({ error: 'Failed to update puppy' });
     }
@@ -160,7 +160,7 @@ app.delete('/api/:id', async (req, res) => {
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).json({ error: 'Internal server error', details: err.message });
-  });
+});
 
 // Start server
 const startServer = async () => {
@@ -170,8 +170,8 @@ const startServer = async () => {
         await puppies.sync({ alter: true });
         console.log(`Puppies model synced in schema "${DB_SCHEMA}".`);
         app.listen(PORT, () => {
-        console.log(`Server is running on port ${PORT}`);
-    });
+            console.log(`Server is running on port ${PORT}`);
+        });
     } catch (err) {
         console.error('Error: ', err);
         process.exit(1); // Exit with failure code
